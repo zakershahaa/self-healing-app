@@ -3,36 +3,27 @@ kind: Deployment
 metadata:
   name: backend
   namespace: production
-
 spec:
   replicas: 2
-
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
       maxSurge: 1
-
   selector:
     matchLabels:
       app: backend
-
   template:
     metadata:
       labels:
         app: backend
-
     spec:
       serviceAccountName: backend-sa
-
       containers:
         - name: backend
           image: zakershaha/zomato_new:latest
-
-
           ports:
             - containerPort: 3000
-
           resources:
             requests:
               cpu: "100m"
@@ -41,29 +32,28 @@ spec:
               cpu: "100m"
               memory: "100Mi"
 
+          # 1. Startup Probe: Yeh app ko shuruat mein load hone ke liye 30 seconds ka time dega.
           startupProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 3000
-            failureThreshold: 30
-            periodSeconds: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 6
 
-          readinessProbe:
-            httpGet:
-              path: /
+          # 2. Liveness Probe: Yeh check karta rahega ki app live hai ya nahi.
+          livenessProbe:
+            tcpSocket:
               port: 3000
             initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 2
-            failureThreshold: 3
-            successThreshold: 1
-
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 20
             periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 3
+            timeoutSeconds: 5
+
+          # 3. Readiness Probe: Yeh check karta hai ki app live hone ke sath traffic lene ke liye taiyar hai ya nahi.
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
             successThreshold: 1
+            failureThreshold: 3
