@@ -8,5 +8,6 @@ spec:
   selector:
     app: backend
   ports:
-    - port: 3000
-      nodePort: 31111
+    - protocol: TCP
+      port: 80        # Browser se open karne ke liye standard port 80
+      targetPort: 3000
