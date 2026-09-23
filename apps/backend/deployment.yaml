@@ -22,38 +22,41 @@ spec:
       containers:
         - name: backend
           image: zakershaha/zomato_new:latest
+          
+          # --- SABSE ZAROORI FIXES FOR REACT APP ---
+          tty: true               # React app process ko background me zinda rakhne ke liye zaroori hai
+          stdin: true             # Terminal support enable karne ke liye
+          
           ports:
             - containerPort: 3000
           resources:
             requests:
               cpu: "100m"
-              memory: "100Mi"
+              memory: "256Mi"     # React apps ke bootup ke liye memory badhai hai
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "200m"
+              memory: "512Mi"
 
-          # 1. Startup Probe: Yeh app ko shuruat mein load hone ke liye 30 seconds ka time dega.
+          # Probes parameters ko React ke build-up time ke hisab se thoda loose kiya hai
           startupProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 5
-            failureThreshold: 6
+            failureThreshold: 12  # Total 60 seconds booting time milega React ko
 
-          # 2. Liveness Probe: Yeh check karta rahega ki app live hai ya nahi.
           livenessProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 15
+            periodSeconds: 15
             timeoutSeconds: 5
 
-          # 3. Readiness Probe: Yeh check karta hai ki app live hone ke sath traffic lene ke liye taiyar hai ya nahi.
           readinessProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 15
+            periodSeconds: 15
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 3
