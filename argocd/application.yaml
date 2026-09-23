@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/devopsbyraham/self-healing-app.git
+    repoURL: https://github.com/zakershahaa/self-healing-app.git
     targetRevision: HEAD
     path: apps/backend
   destination:
