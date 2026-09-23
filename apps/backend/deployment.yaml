@@ -27,7 +27,7 @@ spec:
 
       containers:
         - name: backend
-          image: rahamshaik/zomato_new:c656e1a7c80225dd5aeaefb7c31e8a5cb257a75b
+          image: zakershaha/zomato_new:latest
 
 
           ports:
