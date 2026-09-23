@@ -22,41 +22,45 @@ spec:
       containers:
         - name: backend
           image: zakershaha/zomato_new:latest
+          tty: true
+          stdin: true
           
-          # --- SABSE ZAROORI FIXES FOR REACT APP ---
-          tty: true               # React app process ko background me zinda rakhne ke liye zaroori hai
-          stdin: true             # Terminal support enable karne ke liye
-          
+          # --- EXTRA ENV VARIABLES FOR REACT IN DOCKER ---
+          env:
+            - name: CI
+              value: "true"                # React build warnings ko script crash karne se rokta hai
+            - name: WDS_SOCKET_PORT
+              value: "0"                  # Webpack Dev Server crash fix karta hai
+
           ports:
             - containerPort: 3000
           resources:
             requests:
-              cpu: "100m"
-              memory: "256Mi"     # React apps ke bootup ke liye memory badhai hai
-            limits:
               cpu: "200m"
               memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"               # Memory ko 1GB kiya taaki React boot crash na ho
 
-          # Probes parameters ko React ke build-up time ke hisab se thoda loose kiya hai
           startupProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            failureThreshold: 12  # Total 60 seconds booting time milega React ko
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 12
 
           livenessProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 15
+            initialDelaySeconds: 20
+            periodSeconds: 20
             timeoutSeconds: 5
 
           readinessProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 15
+            initialDelaySeconds: 20
+            periodSeconds: 20
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 3
