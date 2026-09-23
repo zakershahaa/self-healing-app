@@ -4,7 +4,7 @@ metadata:
   name: backend
   namespace: production
 spec:
-  type: LoadBalancer
+  type: LoadBalancer  # <-- Ise 'NodePort' se hata kar 'LoadBalancer' likhein
   selector:
     app: backend
   ports:
